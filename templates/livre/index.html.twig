@@ -1,3 +1,132 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Livre index{% endblock %}
+
+{% block stylesheets %}
+<style>
+    /* Styles pour la carte */
+    .card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    /* Effet survol */
+    .card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Centrer le texte du titre */
+    .card-title {
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .container {
+        margin-top: 20px;
+    }
+
+    /* Réduire la taille de l'image */
+    .card-img-top {
+        width: 100%;  /* L'image occupe toute la largeur de la carte */
+        height: 150px; /* Hauteur réduite pour l'image */
+        object-fit: cover; /* Permet à l'image de remplir l'espace sans déformer */
+    }
+
+    /* Flexbox pour mettre les cartes côte à côte */
+    .row {
+        display: flex;
+        flex-wrap: wrap;  /* Permet à l'élément de se replier à la ligne suivante si nécessaire */
+    }
+
+    .col-md-4 {
+        display: flex;
+        justify-content: center;  /* Centrer les cartes */
+        margin-bottom: 20px;
+    }
+
+    /* Positionner le bouton en haut à droite */
+    .btn-container {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 20px; /* Ajouter un espace entre le bouton et les cartes */
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+    <!-- Conteneur du bouton "Ajouter un nouveau livre" -->
+    <div class="btn-container">
+        <a href="{{ path('app_livre_new') }}" class="btn btn-dark">Ajouter un nouveau livre</a>
+    </div>
+
+    <h1>Liste des Livres</h1>
+
+    <div class="container mt-4">
+        {% for livre in livres %}
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="card"> 
+                        {% if livre.image %}
+                            <img src="{{ asset('images/' ~ livre.image) }}" class="card-img-top" alt="{{ livre.titre }}">
+                        {% else %}
+                            <img src="{{ asset('images/default.png') }}" class="card-img-top" alt="Image par défaut">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ livre.titre }}</h5>
+                        </div>
+                        <div class="card-footer">
+                            <a href="{{ path('app_livre_show', {'id': livre.id}) }}" class="btn btn-info">Détails</a>
+                
+                            <a href="{{ path('app_livre_delete', {'id': livre.id}) }}" class="btn btn-danger">Supprimer</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="col">
+                <p>Aucun livre trouvé.</p>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 {# {% extends 'base.html.twig' %}
 
 {% block title %}Livre index{% endblock %}
@@ -84,7 +213,7 @@
 {% endblock %} #}
 
 
-{% extends 'base.html.twig' %}
+{# {% extends 'base.html.twig' %}
 
 {% block title %}Livre index{% endblock %}
 
@@ -166,4 +295,5 @@
     </div>
 
     <a href="{{ path('app_livre_new') }}" class="btn btn-success mt-3">Ajouter un nouveau livre</a>
-{% endblock %}
+{% endblock %} #}
+
