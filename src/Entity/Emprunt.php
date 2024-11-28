@@ -22,26 +22,12 @@ class Emprunt
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $date_retour = null;
 
-    #[ORM\ManyToOne(inversedBy: 'emprunts')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Livre $livres = null;
-
     #[ORM\ManyToOne(inversedBy: 'historique_emprunts')]
-    #[ORM\JoinColumn(nullable: false)]
     private ?Utilisateur $utilisateurs = null;
 
-    /**
-     * @var Collection<int, Utilisateur>
-     */
-    #[ORM\OneToMany(targetEntity: Utilisateur::class, mappedBy: 'historique_emprunts')]
-    private Collection $utilisateur;
-
-    public function __construct()
-    {
-        $this->utilisateur = new ArrayCollection();
-    }
-
-
+    #[ORM\ManyToOne(inversedBy: 'emprunts')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Livre $livre = null;
     public function getId(): ?int
     {
         return $this->id;
@@ -71,18 +57,7 @@ class Emprunt
         return $this;
     }
 
-    public function getLivres(): ?Livre
-    {
-        return $this->livres;
-    }
-
-    public function setLivres(?Livre $livres): static
-    {
-        $this->livres = $livres;
-
-        return $this;
-    }
-
+  
     public function getUtilisateurs(): ?Utilisateur
     {
         return $this->utilisateurs;
@@ -95,37 +70,18 @@ class Emprunt
         return $this;
     }
 
-    /**
-     * @return Collection<int, Utilisateur>
-     */
-    public function getUtilisateur(): Collection
+    public function getLivre(): ?Livre
     {
-        return $this->utilisateur;
+        return $this->livre;
     }
 
-    public function addUtilisateur(Utilisateur $utilisateur): static
+    public function setLivre(?Livre $livre): static
     {
-        if (!$this->utilisateur->contains($utilisateur)) {
-            $this->utilisateur->add($utilisateur);
-            $utilisateur->setHistoriqueEmprunts($this);
-        }
+        $this->livre = $livre;
 
         return $this;
     }
 
-    public function removeUtilisateur(Utilisateur $utilisateur): static
-    {
-        if ($this->utilisateur->removeElement($utilisateur)) {
-            // set the owning side to null (unless already changed)
-            if ($utilisateur->getHistoriqueEmprunts() === $this) {
-                $utilisateur->setHistoriqueEmprunts(null);
-            }
-        }
-
-        return $this;
-    }
-
-    
-
-    
 }
+
+

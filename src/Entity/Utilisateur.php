@@ -24,12 +24,18 @@ class Utilisateur
     #[ORM\Column(length: 20)]
     private ?string $telephone = null;
 
-    #[ORM\ManyToOne(inversedBy: 'utilisateur')]
-    private ?Emprunt $historique_emprunts = null;
+    /**
+     * @var Collection<int, Emprunt>
+     */
+    #[ORM\OneToMany(targetEntity: Emprunt::class, mappedBy: 'utilisateurs')]
+    private Collection $historique_emprunts;
+
+    public function __construct()
+    {
+        $this->historique_emprunts = new ArrayCollection();
+    }
 
     
-    
-
     public function getId(): ?int
     {
         return $this->id;
@@ -71,17 +77,36 @@ class Utilisateur
         return $this;
     }
 
-    public function getHistoriqueEmprunts(): ?Emprunt
+    /**
+     * @return Collection<int, Emprunt>
+     */
+    public function getHistoriqueEmprunts(): Collection
     {
         return $this->historique_emprunts;
     }
 
-    public function setHistoriqueEmprunts(?Emprunt $historique_emprunts): static
+    public function addHistoriqueEmprunt(Emprunt $historiqueEmprunt): static
     {
-        $this->historique_emprunts = $historique_emprunts;
+        if (!$this->historique_emprunts->contains($historiqueEmprunt)) {
+            $this->historique_emprunts->add($historiqueEmprunt);
+            $historiqueEmprunt->setUtilisateurs($this);
+        }
 
         return $this;
     }
 
+    public function removeHistoriqueEmprunt(Emprunt $historiqueEmprunt): static
+    {
+        if ($this->historique_emprunts->removeElement($historiqueEmprunt)) {
+            // set the owning side to null (unless already changed)
+            if ($historiqueEmprunt->getUtilisateurs() === $this) {
+                $historiqueEmprunt->setUtilisateurs(null);
+            }
+        }
+
+        return $this;
+    }
+
+   
     
 }

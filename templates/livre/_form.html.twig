@@ -1,4 +1,39 @@
 {{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+
+<div class="mb-3">
+    {{ form_label(form.titre) }}
+    {{ form_widget(form.titre, { 'attr': {'class': 'form-control'} }) }}
+</div>
+
+<div class="mb-3">
+    {{ form_label(form.ISBN) }}
+    {{ form_widget(form.ISBN, { 'attr': {'class': 'form-control'} }) }}
+</div>
+
+<div class="mb-3">
+    {{ form_label(form.disponibilite) }}
+    {{ form_widget(form.disponibilite, { 'attr': {'class': 'form-check-input'} }) }}
+</div>
+<div class="mb-3">
+    {% if livre.image %}
+        <p>Image actuelle :</p>
+        <img src="{{ asset('uploads/livres/' ~ livre.image) }}" alt="Image de couverture" style="max-height: 200px;">
+    {% endif %}
+    {{ form_label(form.image) }}
+    {{ form_widget(form.image, { 'attr': {'class': 'form-control'} }) }}
+    <small class="form-text text-muted">Sélectionnez une nouvelle image pour remplacer l'actuelle (optionnel).</small>
+</div>
+
+<div class="mb-3">
+    {{ form_label(form.auteurs) }}
+    {{ form_widget(form.auteurs, { 'attr': {'class': 'form-select'} }) }}
+</div>
+
+<div class="mb-3">
+    {{ form_label(form.genres) }}
+    {{ form_widget(form.genres, { 'attr': {'class': 'form-select'} }) }}
+</div>
+
+<button type="submit" class="btn btn-primary">{{ button_label|default('Save') }}</button>
+
 {{ form_end(form) }}

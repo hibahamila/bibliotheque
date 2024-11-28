@@ -3,60 +3,117 @@
 {% block title %}Livre index{% endblock %}
 
 {% block stylesheets %}
-<style>
-    /* Styles pour la carte */
-    .card {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        border-radius: 10px;
-        overflow: hidden;
-    }
+    <style>
+        /* Container pour les livres */
+        .container {
+            margin-top: 20px;
+        }
 
-    /* Effet survol */
-    .card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    }
+        /* Styles pour les cartes */
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
 
-    /* Centrer le texte du titre */
-    .card-title {
-        text-align: center;
-        font-weight: bold;
-    }
+        /* Effet de survol des cartes */
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
 
-    .container {
-        margin-top: 20px;
-    }
+        /* Titre des cartes */
+        .card-title {
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+        }
 
-    /* Réduire la taille de l'image */
-    .card-img-top {
-        width: 100%;  /* L'image occupe toute la largeur de la carte */
-        height: 150px; /* Hauteur réduite pour l'image */
-        object-fit: cover; /* Permet à l'image de remplir l'espace sans déformer */
-    }
+        /* Image des livres */
+        .card-img-top {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
 
-    /* Flexbox pour mettre les cartes côte à côte */
-    .row {
-        display: flex;
-        flex-wrap: wrap;  /* Permet à l'élément de se replier à la ligne suivante si nécessaire */
-    }
+        /* Container pour le body des cartes */
+        .card-body {
+            padding: 15px;
+            background-color: #f8f9fa;
+        }
 
-    .col-md-4 {
-        display: flex;
-        justify-content: center;  /* Centrer les cartes */
-        margin-bottom: 20px;
-    }
+        /* Footer des cartes (contenant les boutons) */
+        .card-footer {
+            padding: 10px;
+            background-color: #f1f1f1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-    /* Positionner le bouton en haut à droite */
-    .btn-container {
-        display: flex;
-        justify-content: flex-end;
-        margin-bottom: 20px; /* Ajouter un espace entre le bouton et les cartes */
-    }
-</style>
+        /* Style des boutons */
+        .card-footer .btn {
+            padding: 8px 15px;
+            font-size: 0.9em;
+        }
+
+        .btn-info {
+            background-color: #17a2b8;
+            border-color: #17a2b8;
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+            border-color: #ffc107;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        /* Disposition en grille pour les cartes */
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .col-md-4 {
+            flex: 1 1 calc(33.333% - 20px); /* Chaque carte occupe un tiers de l'espace */
+            max-width: calc(33.333% - 20px);
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Ajout d'une petite marge sur mobile */
+        @media (max-width: 768px) {
+            .col-md-4 {
+                flex: 1 1 calc(50% - 20px); /* Sur mobile, les cartes prennent la moitié de la largeur */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .col-md-4 {
+                flex: 1 1 100%; /* Sur très petits écrans, les cartes prennent toute la largeur */
+            }
+        }
+
+        /* Ajout de l'espacement autour de l'élément de bouton */
+        .btn-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
+    </style>
 {% endblock %}
 
+
 {% block body %}
-    <!-- Conteneur du bouton "Ajouter un nouveau livre" -->
+
     <div class="btn-container">
         <a href="{{ path('app_livre_new') }}" class="btn btn-dark">Ajouter un nouveau livre</a>
     </div>
@@ -67,9 +124,9 @@
         {% for livre in livres %}
             <div class="row">
                 <div class="col-md-4 mb-4">
-                    <div class="card"> 
+                    <div class="card">
                         {% if livre.image %}
-                            <img src="{{ asset('images/' ~ livre.image) }}" class="card-img-top" alt="{{ livre.titre }}">
+                            <img src="{{ asset('uploads/livres/' ~ livre.image) }}" class="card-img-top" alt="{{ livre.titre }}">
                         {% else %}
                             <img src="{{ asset('images/default.png') }}" class="card-img-top" alt="Image par défaut">
                         {% endif %}
@@ -78,8 +135,11 @@
                         </div>
                         <div class="card-footer">
                             <a href="{{ path('app_livre_show', {'id': livre.id}) }}" class="btn btn-info">Détails</a>
-                
-                            <a href="{{ path('app_livre_delete', {'id': livre.id}) }}" class="btn btn-danger">Supprimer</a>
+                            <a href="{{ path('app_livre_edit', {'id': livre.id}) }}" class="btn btn-warning">Modifier</a>
+                            <form method="post" action="{{ path('app_livre_delete', {'id': livre.id}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ livre.id) }}">
+                                <button type="submit" class="btn btn-danger">Supprimer</button>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -91,209 +151,3 @@
         {% endfor %}
     </div>
 {% endblock %}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-{# {% extends 'base.html.twig' %}
-
-{% block title %}Livre index{% endblock %}
-
-{% block stylesheets %}
-<style>
-    /* Styles pour la carte */
-    .card {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        border-radius: 10px;
-        overflow: hidden;
-    }
-
-    /* Effet survol */
-    .card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    }
-
-    /* Centrer le texte du titre */
-    .card-title {
-        text-align: center;
-        font-weight: bold;
-    }
-
-    .container {
-        margin-top: 20px;
-    }
-
-    /* Ajouter une taille fixe pour l'image */
-    .card-img-top {
-        width: 100%;  /* L'image occupe toute la largeur de la carte */
-        height: 500px; /* Hauteur fixe pour l'image */
-        object-fit: cover; /* Permet à l'image de remplir l'espace sans déformer */
-    }
-    
-    /* Flexbox pour mettre les cartes côte à côte */
-    .row {
-        display: flex;
-        flex-wrap: wrap;  /* Permet à l'élément de se replier à la ligne suivante si nécessaire */
-    }
-
-    .col-md-4 {
-        display: flex;
-        justify-content: center;  /* Centrer les cartes */
-        margin-bottom: 20px;
-    }
-</style>
-{% endblock %}
-
-
-{% block body %}
-    <h1>Liste des Livres</h1>
-
-    <div class="container mt-4"">
-        {% for livre in livres %}
-            <div class="row">
-            <div class="col-md-4 mb-4">
-                <div class="card"> 
-                    {% if livre.image %}
-                        <img src="{{ asset('images/' ~ livre.image) }}"  class="card-img-top" alt="{{ livre.titre }}">
-                    {% else %}
-                        <img src="{{ asset('images/default.png') }}" class="card-img-top" alt="Image par défaut">
-                    {% endif %}
-                    <div class="card-body">
-                        <h5 class="card-title">{{ livre.titre }}</h5>
-
-                    </div>
-                    <div class="card-footer">
-                        <a href="{{ path('app_livre_show', {'id': livre.id}) }}" class="btn btn-info">Détails</a>
-                        <a href="{{ path('app_livre_edit', {'id': livre.id}) }}" class="btn btn-info">Modifier</a>
-                         <a href="{{path('app_livre_delete',{'id': livre.id}) }}" class="btn btn-danger">supprimer</a>  
-                    </div>
-                </div>
-            </div>
-        {% else %}
-            <div class="col">
-                <p>Aucun livre trouvé.</p>
-            </div>
-        {% endfor %}
-    </div>
-
-    <a href="{{ path('app_livre_new') }}" class="btn btn-success mt-3">Ajouter un nouveau livre</a>
-{% endblock %} #}
-
-
-{# {% extends 'base.html.twig' %}
-
-{% block title %}Livre index{% endblock %}
-
-{% block stylesheets %}
-<style>
-    /* Styles pour la carte */
-    .card {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        border-radius: 10px;
-        overflow: hidden;
-    }
-
-    /* Effet survol */
-    .card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    }
-
-    /* Centrer le texte du titre */
-    .card-title {
-        text-align: center;
-        font-weight: bold;
-    }
-
-    .container {
-        margin-top: 20px;
-    }
-
-    /* Réduire la taille de l'image */
-    .card-img-top {
-        width: 100%;  /* L'image occupe toute la largeur de la carte */
-        height: 150px; /* Hauteur réduite pour l'image */
-        object-fit: cover; /* Permet à l'image de remplir l'espace sans déformer */
-    }
-    
-    /* Flexbox pour mettre les cartes côte à côte */
-    .row {
-        display: flex;
-        flex-wrap: wrap;  /* Permet à l'élément de se replier à la ligne suivante si nécessaire */
-    }
-
-    .col-md-4 {
-        display: flex;
-        justify-content: center;  /* Centrer les cartes */
-        margin-bottom: 20px;
-    }
-</style>
-{% endblock %}
-
-
-{% block body %}
-    <h1>Liste des Livres</h1>
-
-    <div class="container mt-4">
-        {% for livre in livres %}
-            <div class="row">
-                <div class="col-md-4 mb-4">
-                    <div class="card"> 
-                        {% if livre.image %}
-                            <img src="{{ asset('images/' ~ livre.image) }}" class="card-img-top" alt="{{ livre.titre }}">
-                        {% else %}
-                            <img src="{{ asset('images/default.png') }}" class="card-img-top" alt="Image par défaut">
-                        {% endif %}
-                        <div class="card-body">
-                            <h5 class="card-title">{{ livre.titre }}</h5>
-                        </div>
-                        <div class="card-footer">
-                            <a href="{{ path('app_livre_show', {'id': livre.id}) }}" class="btn btn-info">Détails</a>
-                            <a href="{{ path('app_livre_edit', {'id': livre.id}) }}" class="btn btn-info">Modifier</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {% else %}
-            <div class="col">
-                <p>Aucun livre trouvé.</p>
-            </div>
-        {% endfor %}
-    </div>
-
-    <a href="{{ path('app_livre_new') }}" class="btn btn-success mt-3">Ajouter un nouveau livre</a>
-{% endblock %} #}
-
